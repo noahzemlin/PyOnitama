@@ -1,10 +1,25 @@
 from game import Game
 from render import Screen
+import pygame
 
 def main():
     game = Game()
     screen = Screen(game)
-    screen.run()
+    
+    clock = pygame.time.Clock()
+    
+    while screen.running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or \
+                (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                    screen.running = False
+        
+        screen.update()
+        
+        #wait for next frame
+        clock.tick(30)
+
+    pygame.quit()
 
 if __name__ == "__main__":
     main()

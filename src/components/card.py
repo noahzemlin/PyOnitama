@@ -21,12 +21,12 @@ class Card:
         # check if clicked
 
         bgcolor = (255,255,255)
-        if game.selected == self:
+        if game.selectedCard == self:
             bgcolor = (160, 80, 80)
         elif x < pygame.mouse.get_pos()[0] < x + 200 and y < pygame.mouse.get_pos()[1] < y + 120:
             bgcolor = (200, 160, 160)
             if pygame.mouse.get_pressed()[0]:
-                game.select(self)
+                game.selectCard(self)
                 bgcolor = (160, 80, 80)
         pygame.draw.rect(surface, (0,0,0), (x,y,220,120))
         pygame.draw.rect(surface, bgcolor, (x+5,y+5,210,110))
