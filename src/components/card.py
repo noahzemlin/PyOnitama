@@ -1,4 +1,5 @@
 import pygame
+from src.game import Game
 
 CARDS = {
     "Tiger": [(-2, 0), (-1, 0)],
@@ -10,13 +11,12 @@ CARDS = {
 
 class Card:
 
-    def init():
-        Card.font = pygame.font.Font('freesansbold.ttf',24)
+    FONT = pygame.font.Font('freesansbold.ttf',24)
 
     def __init__(self, card):
         self.card = card
 
-    def draw(self, surface, x, y, game):
+    def draw(self, surface: pygame.Surface, x, y, game: Game):
 
         # check if clicked
 
@@ -31,7 +31,7 @@ class Card:
         pygame.draw.rect(surface, (0,0,0), (x,y,220,120))
         pygame.draw.rect(surface, bgcolor, (x+5,y+5,210,110))
 
-        TextSurf = Card.font.render(self.card, True, (0,0,0))
+        TextSurf = Card.FONT.render(self.card, True, (0,0,0))
         TextRect = TextSurf.get_rect()
         TextRect.center = (x+60, y+60)
         surface.blit(TextSurf, TextRect)

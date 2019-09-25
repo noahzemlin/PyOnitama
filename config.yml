@@ -1,0 +1,6 @@
+game:
+  render: true
+agent1:
+  method: human
+agent2:
+  method: random

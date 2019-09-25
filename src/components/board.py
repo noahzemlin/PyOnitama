@@ -1,7 +1,8 @@
 import pygame
+from src.game import Game
 
 class Board:
-    def draw(self, surface, game):
+    def draw(self, surface: pygame.Surface, game: Game):
         pygame.draw.rect(surface, (0,0,0), (10,250,500,500))
         hovered = (-1, -1)
         

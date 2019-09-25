@@ -1,13 +1,12 @@
 import numpy as np
 import pygame
 import os
-from pygame.locals import *
-from game import Game
-from components.board import Board
-from components.card import Card
+from src.game import Game
+from src.components.board import Board
+from src.components.card import Card
 
 # constants
-SCREENRECT = Rect(0, 0, 1000, 1000)
+SCREENRECT = pygame.Rect(0, 0, 1000, 1000)
 
 class Screen:
 
@@ -22,15 +21,15 @@ class Screen:
         bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)
 
         self.screen = pygame.display.set_mode(SCREENRECT.size, winstyle, bestdepth)
-        self.pieces = [pygame.image.load(file).convert_alpha() for file in ['red_pawn.png', 'red_king.png', 'blue_pawn.png', 'blue_king.png']]
+        self.pieces = [pygame.image.load("assets/" + file).convert_alpha() for file in ['red_pawn.png', 'red_king.png', 'blue_pawn.png', 'blue_king.png']]
         self.board = Board()
 
         Card.init()
-        card1 = Card("Tiger")
-        card2 = Card("Dragon")
-        card3 = Card("Frog")
-        card4 = Card("Rabbit")
-        card5 = Card("Crab")
+        Card("Tiger")
+        Card("Dragon")
+        Card("Frog")
+        Card("Rabbit")
+        Card("Crab")
 
     def update(self):
         screen = self.screen
@@ -59,11 +58,11 @@ class Screen:
         screen.blit(TextSurf, TextRect)
 
         #draw cards
-        self.game.cardstate[0].draw(screen, 20, 90, self.game)
-        self.game.cardstate[1].draw(screen, 270, 90, self.game)
-        self.game.cardstate[2].draw(screen, 550, 440, self.game)
-        self.game.cardstate[3].draw(screen, 20, 790, self.game)
-        self.game.cardstate[4].draw(screen, 270, 790, self.game)
+        self.game.cardstate[0].draw(screen, 20, 90, self.game) #top left
+        self.game.cardstate[1].draw(screen, 270, 90, self.game) #top right
+        self.game.cardstate[2].draw(screen, 550, 440, self.game) #center
+        self.game.cardstate[3].draw(screen, 20, 790, self.game) #bottom left
+        self.game.cardstate[4].draw(screen, 270, 790, self.game) #bottom right
 
         #draw pieces
         for x in range(0,5):

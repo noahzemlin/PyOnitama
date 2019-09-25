@@ -1,5 +1,5 @@
 import numpy as np
-from components.card import Card, CARDS
+from src.components.card import Card, CARDS
 
 class Game:
 
@@ -19,6 +19,7 @@ class Game:
         self.selectedBoardX = -1
         self.selectedBoardY = -1
         self.currentplayer = 0
+
 
         Game.instance = self
 
@@ -91,9 +92,9 @@ class Game:
     def checkWin(self):
         # win by reaching enemy start
         if self.gamestate[2,0] == 8:
-            self.currentplayer = 2
-        if self.gamestate[2,4] == 3:
             self.currentplayer = 3
+        if self.gamestate[2,4] == 3:
+            self.currentplayer = 2
 
         player1Master = False
         player2Master = False
