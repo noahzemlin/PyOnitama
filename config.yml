@@ -1,5 +1,5 @@
-game:
-  render: true
+app:
+  render: True
 agent1:
   method: human
 agent2:
