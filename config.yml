@@ -1,6 +1,6 @@
 app:
   render: True
-agent1:
+agent_blue:
   method: human
-agent2:
-  method: random
+agent_red:
+  method: human

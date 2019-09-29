@@ -1,5 +1,5 @@
 import pygame
-from src.config import config
+from src.config import Config
 from src.game import Game
 from src.render import Screen
 
@@ -8,9 +8,9 @@ def main():
 
     game = Game()
 
-    if config["app"]["render"]:
+    if Config.render:
 
-        screen = Screen(game)
+        screen = Screen(game.game_state)
 
         clock = pygame.time.Clock()
 
@@ -19,6 +19,7 @@ def main():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     screen.running = False
 
+            game.update()
             screen.update()
 
             # wait for next frame
