@@ -18,6 +18,7 @@ class GameState:
         self.cards = ["", "", "", "", ""]
         self.current_player = Piece.BLUE
         self.winner = Piece.NONE
+        self.turn_num = 0
 
     def __setitem__(self, board_tuple, piece):
         self.board[board_tuple] = piece
@@ -34,6 +35,8 @@ class GameState:
             self.cards = cards
 
     def reset(self):
+        self.board = [[Piece.NONE for i in range(0, 5)] for j in range(0, 5)]
+
         self.board[0][0] = Piece.RED
         self.board[1][0] = Piece.RED
         self.board[2][0] = Piece.RED_KING
@@ -45,6 +48,12 @@ class GameState:
         self.board[2][4] = Piece.BLUE_KING
         self.board[3][4] = Piece.BLUE
         self.board[4][4] = Piece.BLUE
+
+        self.current_player = Piece.BLUE
+        self.winner = Piece.NONE
+        self.turn_num = 0
+
+        self.set_cards()
 
     def check_win(self):
         # Win by reaching enemy start
@@ -69,6 +78,9 @@ class GameState:
         if not red_king_exists:
             self.winner = Piece.BLUE
 
+    def make_move_tuple(self, tup):
+        self.make_move(tup[0], tup[1], tup[2], tup[3], tup[4])
+
     def make_move(self, from_x, from_y, to_x, to_y, card):
         if self.check_valid_move(from_x, from_y, to_x, to_y, card):
 
@@ -90,6 +102,9 @@ class GameState:
             else:
                 self.current_player = Piece.RED
 
+            # Increase turn number every move
+            self.turn_num += 1
+
     def check_valid_move(self, from_x, from_y, to_x, to_y, card):
 
         card = self.cards[card]
@@ -97,6 +112,10 @@ class GameState:
 
         # If out of bounds
         if to_x < 0 or to_x > 4 or to_y < 0 or to_y > 4:
+            return False
+
+        # If not owned piece
+        if not (0 <= self.board[from_x][from_y].value - self.current_player.value <= 1):
             return False
 
         # If moving onto friendly piece
@@ -118,3 +137,9 @@ class GameState:
                     return True
 
         return False
+
+    def pass_move(self):
+        if self.current_player == Piece.RED:
+            self.current_player = Piece.BLUE
+        else:
+            self.current_player = Piece.RED

@@ -23,9 +23,14 @@ def main():
             screen.update()
 
             # wait for next frame
-            clock.tick(30)
+            clock.tick(60)
 
         pygame.quit()
+
+    else:
+
+        while game.playing:
+            game.update()
 
 
 if __name__ == "__main__":
