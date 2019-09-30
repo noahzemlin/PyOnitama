@@ -1,7 +1,8 @@
 import random
-from src.interfaces.game_state import GameState, Piece
-from src.interfaces.cards_enum import CARDS
+
 from src.agents.base_agent import BaseAgent
+from src.interfaces.cards_enum import CARDS
+from src.interfaces.game_state import GameState, Piece
 
 
 class RandomAgent(BaseAgent):
@@ -36,16 +37,20 @@ class RandomAgent(BaseAgent):
                 for piece in pieces:
                     x = piece[0]
                     y = piece[1]
-                    if game.current_player == Piece.BLUE and game.check_valid_move(x, y, x + move_option[0], y - move_option[1], card_index):  # blue side
+                    if game.current_player == Piece.BLUE and game.check_valid_move(x, y, x + move_option[0],
+                                                                                   y - move_option[1],
+                                                                                   card_index):  # blue side
                         moves.append((x, y, x + move_option[0], y - move_option[1], card_index))
-                    if game.current_player == Piece.RED and game.check_valid_move(x, y, x - move_option[0], y + move_option[1], card_index):  # red side
+                    if game.current_player == Piece.RED and game.check_valid_move(x, y, x - move_option[0],
+                                                                                  y + move_option[1],
+                                                                                  card_index):  # red side
                         moves.append((x, y, x - move_option[0], y + move_option[1], card_index))
 
         # If there is a move
         if len(moves) > 0:
             actual_move = random.choice(moves)
             # print(f'[Random {self.player}] Making move: {actual_move}')
-            game.make_move_tuple(actual_move) # Make it
+            game.make_move_tuple(actual_move)  # Make it
         else:
             # print(f'[Random {self.player}] No moves! Passing turn...')
             game.pass_move()

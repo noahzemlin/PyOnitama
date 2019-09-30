@@ -1,7 +1,8 @@
+import time
+
 from src.agents.random import RandomAgent
 from src.experiments.base_experiment import BaseExperiment
 from src.interfaces.game_state import GameState, Piece
-import time
 
 
 class RandomAgentsExperiment(BaseExperiment):

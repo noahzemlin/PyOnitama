@@ -1,4 +1,4 @@
-from src.interfaces.game_state import GameState, Piece
+from src.interfaces.game_state import GameState
 
 
 class BaseAgent:

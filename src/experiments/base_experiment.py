@@ -11,5 +11,4 @@ class BaseExperiment():
 
     # Return True to play another game, False to end
     def game_ended(self, game_state: GameState):
-        print(f'{game_state.winner} won!')
         return True

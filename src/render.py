@@ -1,14 +1,14 @@
 import pygame
 
-from src.components.card import Card
 from src.components.board import draw_board
-
+from src.components.card import Card
 # constants
 from src.interfaces.game_state import Piece, GameState
 from src.interfaces.interface_state import InterfaceState
 
 SCREEN_SCALE = 0.8
 SCREENRECT = pygame.Rect(0, 0, int(1000 * SCREEN_SCALE), int(1000 * SCREEN_SCALE))
+
 
 class Screen:
 

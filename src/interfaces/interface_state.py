@@ -30,7 +30,8 @@ class InterfaceState:
 
         # If friendly piece selected and chose another place, perform move
         if self.selected_board != (-1, -1):
-            if self.game_state.check_valid_move(self.selected_board[0], self.selected_board[1], x, y, self.selected_card):
+            if self.game_state.check_valid_move(self.selected_board[0], self.selected_board[1], x, y,
+                                                self.selected_card):
                 self.game_state.make_move(self.selected_board[0], self.selected_board[1], x, y, self.selected_card)
                 self.selected_card = -1
                 self.selected_board = (-1, -1)

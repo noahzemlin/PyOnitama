@@ -1,8 +1,9 @@
 import pygame
 
+from src.interfaces.cards_enum import CARDS
 from src.interfaces.game_state import GameState
 from src.interfaces.interface_state import InterfaceState
-from src.interfaces.cards_enum import CARDS
+
 
 def get_mouse_position():
     return int(pygame.mouse.get_pos()[0] / Card.SCREEN_SCALE), int(pygame.mouse.get_pos()[1] / Card.SCREEN_SCALE)
