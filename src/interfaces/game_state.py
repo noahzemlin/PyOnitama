@@ -55,34 +55,23 @@ class GameState:
 
         self.set_cards()
 
-    def check_win(self):
-        # Win by reaching enemy start
-        if self.board[2][0] == Piece.BLUE_KING:
-            self.winner = Piece.BLUE
-        if self.board[2][4] == Piece.RED_KING:
-            self.winner = Piece.RED
-
-        # Check win by removal of king
-        blue_king_exists = False
-        red_king_exists = False
-
-        for x in range(0, 5):
-            for y in range(0, 5):
-                if self.board[x][y] == Piece.BLUE_KING:
-                    blue_king_exists = True
-                if self.board[x][y] == Piece.RED_KING:
-                    red_king_exists = True
-
-        if not blue_king_exists:
-            self.winner = Piece.RED
-        if not red_king_exists:
-            self.winner = Piece.BLUE
-
     def make_move_tuple(self, tup):
         self.make_move(tup[0], tup[1], tup[2], tup[3], tup[4])
 
     def make_move(self, from_x, from_y, to_x, to_y, card):
         if self.check_valid_move(from_x, from_y, to_x, to_y, card):
+
+            # Check if moving onto king and give win
+            if self.board[to_x][to_y] == Piece.BLUE_KING:
+                self.winner = Piece.RED
+            if self.board[to_x][to_y] == Piece.RED_KING:
+                self.winner = Piece.BLUE
+
+            # Check if moving king onto home and give win
+            if self.board[from_x][from_y] == Piece.BLUE_KING and to_x == 2 and to_y == 0:
+                self.winner = Piece.BLUE
+            if self.board[from_x][from_y] == Piece.RED_KING and to_x == 2 and to_y == 4:
+                self.winner = Piece.RED
 
             # Move piece
             self.board[to_x][to_y] = self.board[from_x][from_y]
@@ -92,9 +81,6 @@ class GameState:
             temp = self.cards[2]
             self.cards[2] = self.cards[card]
             self.cards[card] = temp
-
-            # Check win
-            self.check_win()
 
             # Change player turn
             if self.current_player == Piece.RED:

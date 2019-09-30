@@ -1,14 +1,15 @@
 import pygame
-from src.config import Config
+
+from src.experiments.play_against_random import PlayAgainstRandomExperiment
 from src.game import Game
 from src.render import Screen
 
 
 def main():
 
-    game = Game()
+    game = Game(PlayAgainstRandomExperiment())
 
-    if Config.render:
+    if game.do_render:
 
         screen = Screen(game.game_state)
 

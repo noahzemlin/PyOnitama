@@ -5,9 +5,6 @@ class BaseAgent:
     def __init__(self):
         pass
 
-    def game_start(self, game: GameState, player: Piece):
-        pass
-
     def move(self, game: GameState):
         pass
 

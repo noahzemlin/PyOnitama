@@ -1,6 +1,0 @@
-app:
-  render: True
-agent_blue:
-  method: random
-agent_red:
-  method: random
