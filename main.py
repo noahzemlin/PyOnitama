@@ -1,13 +1,15 @@
 import pygame
 
 from src.experiments.play_against_random import PlayAgainstRandomExperiment
+from src.experiments.random_agents import RandomAgentsExperiment
+from src.experiments.base_experiment import BaseExperiment
 from src.game import Game
 from src.render import Screen
 
 
 def main():
 
-    game = Game(PlayAgainstRandomExperiment())
+    game = Game(RandomAgentsExperiment())
 
     if game.do_render:
 
