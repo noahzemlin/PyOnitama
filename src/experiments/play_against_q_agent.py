@@ -11,9 +11,9 @@ class PlayAgainstQExperiment(BaseExperiment):
     def __init__(self):
         super().__init__()
 
-        self.q_agent = QLearningAgent("knowledge.txt")
+        self.q_agent = QLearningAgent("qlearned.brain")
         self.q_agent.epsilon = 0
-        self.q_agent.alpha = 0
+        self.q_agent.alpha = 0.2
 
         self.blue_agent = self.q_agent
         self.red_agent = BaseAgent()

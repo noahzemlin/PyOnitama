@@ -1,5 +1,6 @@
 import json
 import random
+import struct
 
 from src.agents.base_agent import BaseAgent
 from src.interfaces.game_state import GameState, Piece
@@ -78,8 +79,14 @@ class QLearningAgent(BaseAgent):
         self.last_played = Piece.NONE
 
         if file is not None:
-            with open(file, 'r') as f:
-                self.Q = json.load(f)
+            with open(file, 'rb') as f:
+                key_bytes = f.read(16)
+                while key_bytes != b"":
+                    key = format(int.from_bytes(key_bytes, byteorder="big"), '035')
+                    value = struct.unpack('f', f.read(4))[0]
+                    self.Q[key] = value
+                    key_bytes = f.read(16)
+                print(f'read {len(self.Q)}')
 
     def q_learn(self, last_state, reward, future_estimate):
         new_Q = (1 - self.alpha) * self.getQ(last_state) + self.alpha * (reward + self.gamma * future_estimate)
@@ -132,7 +139,7 @@ class QLearningAgent(BaseAgent):
 
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
-        # print(f'Confidence: {max_action_value/5}')
+        print(f'Confidence: {(max_action_value + 2.5)/7.5}')
 
         if game.current_player == Piece.BLUE:
             if self.last_state_key_blue is not None:
