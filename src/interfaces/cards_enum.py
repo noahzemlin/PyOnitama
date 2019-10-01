@@ -5,3 +5,5 @@ CARDS = {
     "Tiger": [(0, 2), (0, -1)],
     "Monkey": [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 }
+
+CARDS_ID = {card: i for i, card in enumerate(CARDS, 1)}

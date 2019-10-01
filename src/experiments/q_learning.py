@@ -13,22 +13,21 @@ class QLearningExperiment(BaseExperiment):
         # Eventually move to using the same agent for both, but difficult to get last action
         self.q_agent = QLearningAgent()
 
-        self.blue_agent = RandomAgent()
+        self.blue_agent = self.q_agent
         self.red_agent = self.q_agent
 
         self.do_render = False
 
         self.num_games = 0
-        self.game_history = []
 
     def game_ended(self, game_state: GameState):
         self.num_games += 1
-        self.game_history.append(game_state.winner)
 
-        if self.num_games < 500:
-            last_100_games = self.game_history[-100:]
-            if self.num_games % 100 == 0:
-                print(round(last_100_games.count(Piece.BLUE) / len(last_100_games) * 100) / 100)
+        if self.num_games < 1000000:
+            if self.num_games % 10000 == 0:  # every 10000 games, record and reset agents
+                print(f'{self.num_games / 1000000.0 * 100.0}% done!')
+                with open("knowledge.txt", 'w') as f:
+                    json.dump(self.q_agent.Q, f)
 
             # swap positions to learn both sides
             temp = self.blue_agent

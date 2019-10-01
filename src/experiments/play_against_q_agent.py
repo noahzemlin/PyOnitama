@@ -11,11 +11,28 @@ class PlayAgainstQExperiment(BaseExperiment):
     def __init__(self):
         super().__init__()
 
-        self.blue_agent = QLearningAgent("knowledge2_red.txt")
-        self.blue_agent.epsilon = 0
+        self.q_agent = QLearningAgent("knowledge.txt")
+        self.q_agent.epsilon = 0
+        self.q_agent.alpha = 0
+
+        self.blue_agent = self.q_agent
         self.red_agent = BaseAgent()
 
         self.do_render = True
+        self.q_wins = 0
+        self.games = 0
 
     def game_ended(self, game_state: GameState):
+        self.games += 1
+
+        if game_state.winner == self.q_agent.last_played:
+            self.q_wins += 1
+
+        if self.games % 100 == 0:
+            print(f'win-rate: {self.q_wins / self.games}')
+
+        temp = self.blue_agent
+        self.blue_agent = self.red_agent
+        self.red_agent = temp
+
         return True

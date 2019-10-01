@@ -1,6 +1,7 @@
 import pygame
 
 from src.experiments.q_learning import QLearningExperiment
+from src.experiments.play_against_q_agent import PlayAgainstQExperiment
 from src.game import Game
 from src.render import Screen
 

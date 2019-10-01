@@ -153,13 +153,11 @@ class GameState:
                 for piece in pieces:
                     x = piece[0]
                     y = piece[1]
-                    if self.current_player == Piece.BLUE and self.check_valid_move(x, y, x + move_option[0],
-                                                                                   y - move_option[1],
-                                                                                   card_index):  # blue side
-                        moves.append((x, y, x + move_option[0], y - move_option[1], card_index))
-                    if self.current_player == Piece.RED and self.check_valid_move(x, y, x - move_option[0],
-                                                                                  y + move_option[1],
-                                                                                  card_index):  # red side
-                        moves.append((x, y, x - move_option[0], y + move_option[1], card_index))
+                    if self.current_player == Piece.BLUE:
+                        if self.check_valid_move(x, y, x + move_option[0], y - move_option[1], card_index):  # blue side
+                            moves.append((x, y, x + move_option[0], y - move_option[1], card_index))
+                    if self.current_player == Piece.RED:
+                        if self.check_valid_move(x, y, x - move_option[0], y + move_option[1], card_index):  # red side
+                            moves.append((x, y, x - move_option[0], y + move_option[1], card_index))
 
         return moves

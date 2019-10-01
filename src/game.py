@@ -9,14 +9,11 @@ class Game:
 
     def __init__(self, experiment: BaseExperiment):
         self.game_state = GameState()
-        self.game_state.reset(["Rabbit", "Cobra", "Rooster", "Tiger", "Monkey"])
+        self.game_state.reset()
 
         self.experiment = experiment
 
         self.do_render = experiment.do_render
-
-        self.agent_blue = experiment.blue_agent
-        self.agent_red = experiment.red_agent
 
         self.playing = True
 
@@ -28,15 +25,15 @@ class Game:
         # Tell agents to move.
         # If agent is human, then human will act on its own through ui to change current_player
         if self.game_state.winner == Piece.NONE and self.game_state.current_player == Piece.BLUE:
-            self.agent_blue.move(self.game_state)
+            self.experiment.blue_agent.move(self.game_state)
         if self.game_state.winner == Piece.NONE and self.game_state.current_player == Piece.RED:
-            self.agent_red.move(self.game_state)
+            self.experiment.red_agent.move(self.game_state)
 
         # If game ended, tell agents and experiment
         if self.game_state.winner != Piece.NONE:
-            self.agent_blue.game_end(self.game_state)
-            self.agent_red.game_end(self.game_state)
+            self.experiment.blue_agent.game_end(self.game_state)
+            self.experiment.red_agent.game_end(self.game_state)
             if self.experiment.game_ended(self.game_state):
-                self.game_state.reset(["Rabbit", "Cobra", "Rooster", "Tiger", "Monkey"])
+                self.game_state.reset()
             else:
                 self.playing = False
