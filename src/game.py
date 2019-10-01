@@ -1,3 +1,5 @@
+import time
+
 from src.experiments.base_experiment import BaseExperiment
 from src.interfaces.game_state import GameState, Piece
 
@@ -7,7 +9,7 @@ class Game:
 
     def __init__(self, experiment: BaseExperiment):
         self.game_state = GameState()
-        self.game_state.reset()
+        self.game_state.reset(["Rabbit", "Cobra", "Rooster", "Tiger", "Monkey"])
 
         self.experiment = experiment
 
@@ -35,6 +37,6 @@ class Game:
             self.agent_blue.game_end(self.game_state)
             self.agent_red.game_end(self.game_state)
             if self.experiment.game_ended(self.game_state):
-                self.game_state.reset()
+                self.game_state.reset(["Rabbit", "Cobra", "Rooster", "Tiger", "Monkey"])
             else:
                 self.playing = False

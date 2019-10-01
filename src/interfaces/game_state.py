@@ -34,7 +34,7 @@ class GameState:
         else:
             self.cards = cards
 
-    def reset(self):
+    def reset(self, cards=None):
         self.board = [[Piece.NONE for i in range(0, 5)] for j in range(0, 5)]
 
         self.board[0][0] = Piece.RED
@@ -53,7 +53,7 @@ class GameState:
         self.winner = Piece.NONE
         self.turn_num = 0
 
-        self.set_cards()
+        self.set_cards(cards)
 
     def make_move_tuple(self, tup):
         self.make_move(tup[0], tup[1], tup[2], tup[3], tup[4])
@@ -129,3 +129,37 @@ class GameState:
             self.current_player = Piece.BLUE
         else:
             self.current_player = Piece.RED
+
+    def get_possible_actions(self):
+        moves = []
+
+        # Find pieces
+        pieces = []
+        for x in range(0, 5):
+            for y in range(0, 5):
+                if self[x, y].value == self.current_player.value or self[x, y].value == self.current_player.value + 1:
+                    pieces.append((x, y))
+
+        # Get Available Cards
+        if self.current_player == Piece.BLUE:
+            available_cards = [0, 1]
+        else:
+            available_cards = [3, 4]
+
+        # For each card, for each piece, find valid moves
+        for card_index in available_cards:
+            move_options = CARDS[self.cards[card_index]]
+            for move_option in move_options:
+                for piece in pieces:
+                    x = piece[0]
+                    y = piece[1]
+                    if self.current_player == Piece.BLUE and self.check_valid_move(x, y, x + move_option[0],
+                                                                                   y - move_option[1],
+                                                                                   card_index):  # blue side
+                        moves.append((x, y, x + move_option[0], y - move_option[1], card_index))
+                    if self.current_player == Piece.RED and self.check_valid_move(x, y, x - move_option[0],
+                                                                                  y + move_option[1],
+                                                                                  card_index):  # red side
+                        moves.append((x, y, x - move_option[0], y + move_option[1], card_index))
+
+        return moves

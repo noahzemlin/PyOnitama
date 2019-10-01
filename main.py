@@ -1,13 +1,13 @@
 import pygame
 
-from src.experiments.play_against_random import PlayAgainstRandomExperiment
+from src.experiments.q_learning import QLearningExperiment
 from src.game import Game
 from src.render import Screen
 
 
 def main():
 
-    game = Game(PlayAgainstRandomExperiment())
+    game = Game(QLearningExperiment())
 
     if game.do_render:
 
