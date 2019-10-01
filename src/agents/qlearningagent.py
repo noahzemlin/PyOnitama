@@ -38,7 +38,16 @@ def game_state_to_q_state(game: GameState, action_tuple):
     else:
         for i in range(0, 5)[::-1]:  # flip the board by reversing locations
             for j in range(0, 5)[::-1]:
-                state += str(game[j, i].value)
+                piece = game[j, i]
+                if piece == Piece.BLUE:
+                    piece = Piece.RED
+                elif piece == Piece.RED:
+                    piece = Piece.BLUE
+                elif piece == Piece.RED_KING:
+                    piece = Piece.BLUE_KING
+                elif piece == Piece.BLUE_KING:
+                    piece = Piece.RED_KING
+                state += str(piece.value)
 
         for i in [3, 4, 2, 0, 1]:  # same here
             state += str(CARDS_ID[game.cards[i]])
@@ -60,7 +69,7 @@ class QLearningAgent(BaseAgent):
 
         self.Q = {}
         self.alpha = 0.10  # Learning rate
-        self.gamma = 0.99  # Discount factor
+        self.gamma = 0.98  # Discount factor
         self.epsilon = 0.15  # Epsilon greedy
 
         self.last_state_key_blue = None
@@ -80,13 +89,13 @@ class QLearningAgent(BaseAgent):
             self.Q[last_state] = new_Q
 
     def game_end(self, game: GameState):
-        # give +5 if win, -5 if lose
+        # give +5 if win, -2.5 if lose
 
         if self.last_state_key_blue is not None and game.winner == Piece.BLUE:
             self.q_learn(self.last_state_key_blue, 5, 0)
-            # self.q_learn(self.last_state_key_red, -1, 0)
+            self.q_learn(self.last_state_key_red, -2.5, 0)
         elif self.last_state_key_red is not None:
-            # self.q_learn(self.last_state_key_blue, -1, 0)
+            self.q_learn(self.last_state_key_blue, -2.5, 0)
             self.q_learn(self.last_state_key_red, 5, 0)
 
         self.last_state_key_blue = None
