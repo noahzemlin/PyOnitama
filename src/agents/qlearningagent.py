@@ -75,8 +75,6 @@ class QLearningAgent(BaseAgent):
         self.last_state_key_blue = None
         self.last_state_key_red = None
 
-        self.last_played = Piece.NONE
-
         if file is not None:
             with open(file, 'r') as f:
                 self.Q = json.load(f)
@@ -109,26 +107,27 @@ class QLearningAgent(BaseAgent):
 
     def move(self, game: GameState):
 
-        self.last_played = game.current_player
-
-        max_action = None
-        max_action_value = -100000
         actions = game.get_possible_actions()
 
         if random.random() < self.epsilon:
             # pick random action lol
             max_action = random.choice(actions)
-            max_action_value = self.getQ(game_state_to_q_state(game, max_action))
+            max_action_key = game_state_to_q_state(game, max_action)
+            max_action_value = self.getQ(max_action_key)
         else:
-            action_value = {}
+
+            action_key_value_pairs = []
+
             for action in actions:
-                value = self.getQ(game_state_to_q_state(game, action))
-                action_value[action] = value
-                if value > max_action_value:
-                    max_action = action
-                    max_action_value = value
-            if max_action_value == 0:  # if no learned path, pick random path
-                max_action = random.choice([action for action in actions if action_value[action] == 0])
+                key = game_state_to_q_state(game, action)
+                value = self.getQ(key)
+                action_key_value_pairs.append((action, key, value))
+
+            random.shuffle(action_key_value_pairs)
+            action_key_value_pairs.sort(key=lambda x: x[1])
+            max_action = action_key_value_pairs[0][0]
+            max_action_key = action_key_value_pairs[0][1]
+            max_action_value = action_key_value_pairs[0][2]
 
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
@@ -138,12 +137,12 @@ class QLearningAgent(BaseAgent):
             if self.last_state_key_blue is not None:
                 self.q_learn(self.last_state_key_blue, 0, max_action_value)
 
-            self.last_state_key_blue = game_state_to_q_state(game, max_action)
+            self.last_state_key_blue = max_action_key
 
         else:
             if self.last_state_key_red is not None:
                 self.q_learn(self.last_state_key_red, 0, max_action_value)
 
-            self.last_state_key_red = game_state_to_q_state(game, max_action)
+            self.last_state_key_red = max_action_key
 
         game.make_move_tuple(max_action)

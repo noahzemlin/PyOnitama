@@ -3,7 +3,6 @@ import time
 from src.experiments.base_experiment import BaseExperiment
 from src.interfaces.game_state import GameState, Piece
 
-
 class Game:
     instance = None
 
