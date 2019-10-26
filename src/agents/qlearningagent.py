@@ -1,5 +1,6 @@
 import json
 import random
+import pickle
 
 from src.agents.base_agent import BaseAgent
 from src.interfaces.game_state import GameState, Piece
@@ -64,20 +65,24 @@ def game_state_to_q_state(game: GameState, action_tuple):
 
 
 class QLearningAgent(BaseAgent):
-    def __init__(self, file=None):
+    def __init__(self):
         super().__init__()
 
         self.Q = {}
-        self.alpha = 0.10  # Learning rate
+        self.alpha = 0.05  # Learning rate
         self.gamma = 0.98  # Discount factor
         self.epsilon = 0.15  # Epsilon greedy
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
 
-        if file is not None:
-            with open(file, 'r') as f:
-                self.Q = json.load(f)
+    def write_to_file(self, file):
+        with open(file, 'wb') as f:
+            pickle.dump(self.Q, f)
+
+    def read_from_file(self, file):
+        with open(file, 'rb') as f:
+            self.Q = pickle.load(f)
 
     def q_learn(self, last_state, reward, future_estimate):
         new_Q = (1 - self.alpha) * self.getQ(last_state) + self.alpha * (reward + self.gamma * future_estimate)
@@ -87,21 +92,21 @@ class QLearningAgent(BaseAgent):
             self.Q[last_state] = new_Q
 
     def game_end(self, game: GameState):
-        # give +5 if win, -2.5 if lose
+        # give +1 if win, -1 if lose
 
         if self.last_state_key_blue is not None and game.winner == Piece.BLUE:
-            self.q_learn(self.last_state_key_blue, 5, 0)
-            self.q_learn(self.last_state_key_red, -2.5, 0)
+            self.q_learn(self.last_state_key_blue, 1, 0)
+            self.q_learn(self.last_state_key_red, -1, 0)
         elif self.last_state_key_red is not None:
-            self.q_learn(self.last_state_key_blue, -2.5, 0)
-            self.q_learn(self.last_state_key_red, 5, 0)
+            self.q_learn(self.last_state_key_red, 1, 0)
+            self.q_learn(self.last_state_key_blue, -1, 0)
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
 
     def getQ(self, key):
         if key not in self.Q:
-            return 0  # Default everything at 0 here!!!
+            return 0  # Default everything at 0.5 here!!!
         else:
             return self.Q[key]
 
@@ -124,14 +129,16 @@ class QLearningAgent(BaseAgent):
                 action_key_value_pairs.append((action, key, value))
 
             random.shuffle(action_key_value_pairs)
-            action_key_value_pairs.sort(key=lambda x: x[1])
+            action_key_value_pairs.sort(key=lambda x: x[2], reverse=True)
             max_action = action_key_value_pairs[0][0]
             max_action_key = action_key_value_pairs[0][1]
             max_action_value = action_key_value_pairs[0][2]
 
+            print(action_key_value_pairs)
+
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
-        # print(f'Confidence: {max_action_value/5}')
+        print(f'Confidence: {max_action_value}')
 
         if game.current_player == Piece.BLUE:
             if self.last_state_key_blue is not None:
