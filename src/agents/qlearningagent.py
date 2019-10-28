@@ -134,11 +134,11 @@ class QLearningAgent(BaseAgent):
             max_action_key = action_key_value_pairs[0][1]
             max_action_value = action_key_value_pairs[0][2]
 
-            print(action_key_value_pairs)
+            # print(action_key_value_pairs)
 
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
-        print(f'Confidence: {max_action_value}')
+        # print(f'Confidence: {max_action_value}')
 
         if game.current_player == Piece.BLUE:
             if self.last_state_key_blue is not None:

@@ -91,6 +91,22 @@ class GameState:
             # Increase turn number every move
             self.turn_num += 1
 
+    def does_move_win_tuple(self, tup):
+        self.does_move_win(tup[0], tup[1], tup[2], tup[3], tup[4])
+
+    def does_move_win(self, from_x, from_y, to_x, to_y, card):
+        # Check if moving onto king and give win
+        if self.board[to_x][to_y] == Piece.BLUE_KING:
+            return True
+        if self.board[to_x][to_y] == Piece.RED_KING:
+            return True
+
+        # Check if moving king onto home and give win
+        if self.board[from_x][from_y] == Piece.BLUE_KING and to_x == 2 and to_y == 0:
+            return True
+        if self.board[from_x][from_y] == Piece.RED_KING and to_x == 2 and to_y == 4:
+            return True
+
     def check_valid_move(self, from_x, from_y, to_x, to_y, card):
 
         card = self.cards[card]

@@ -8,7 +8,7 @@ from src.render import Screen
 
 def main():
 
-    game = Game(PlayAgainstQExperiment())
+    game = Game(QLearningExperiment())
 
     if game.do_render:
 
