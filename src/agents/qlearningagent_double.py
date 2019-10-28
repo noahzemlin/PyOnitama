@@ -79,11 +79,11 @@ class QLearningAgentDouble(BaseAgent):
 
     def write_to_file(self, file):
         with open(file, 'wb') as f:
-            pickle.dump(self.Q, f)
+            pickle.dump(self.QA, f)
 
     def read_from_file(self, file):
         with open(file, 'rb') as f:
-            self.Q = pickle.load(f)
+            self.QA = pickle.load(f)
 
     def q_learn(self, last_state, reward, best_b_from_a, best_a_from_b):
         new_QA = self.getQA(last_state) + self.alpha * (reward + self.gamma * best_b_from_a - self.getQA(last_state))
