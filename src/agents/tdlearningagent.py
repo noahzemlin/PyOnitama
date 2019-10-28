@@ -33,8 +33,8 @@ def game_to_v_state(game: GameState):
 class TDLearningAgent(BaseAgent):
     def __init__(self, file=None):
         self.V = {} # Map S -> R
-        self.alpha = 0.10  # Learning rate
-        self.gamma = 0.98  # Discount factor
+        self.alpha = 0.05  # Learning rate
+        self.gamma = 0.96  # Discount factor
         self.epsilon = 0.15  # Epsilon greedy
 
         self.last_state_key = None
@@ -77,9 +77,27 @@ class TDLearningAgent(BaseAgent):
             for action in actions:
                 tempGame=game
                 tempGame.make_move_tuple(action)
-                VOfAction=self.getV(game_to_v_state(tempGame))
-                if VOfAction>max_V:
+                if tempGame.winner==Piece.BLUE: #Choose winning action if available. Impossible to lose on your turn.
+                    max_V = 10000
                     chosen_action=action
-                    max_V=VOfAction
+                    break
+
+                actions2 = tempGame.get_possible_actions()
+                random.shuffle(actions2)
+                min_V=10000
+                for action2 in actions2:
+                    tempGame2=tempGame
+                    tempGame2.make_move_tuple(action2)
+                    if tempGame2.winner==Piece.RED: #Choose winning action if available. Impossible to lose on your turn.
+                        min_V = -9999
+                        break
+                    VOfAction2=self.getV(game_to_v_state(tempGame2))
+                    if VOfAction2 < min_V:
+                        min_V=VOfAction2
+
+                VOfAction=self.getV(game_to_v_state(tempGame))
+                if min_V>max_V:
+                    chosen_action=action
+                    max_V=min_V
         self.last_state_key=game_to_v_state(game)
         game.make_move_tuple(chosen_action)

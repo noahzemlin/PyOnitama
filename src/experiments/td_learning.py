@@ -8,7 +8,7 @@ from src.interfaces.game_state import GameState, Piece
 class TDLearningExperiment(BaseExperiment):
     def __init__(self):
         super().__init__()
-        self.td_agent = TDLearningAgent()
+        self.td_agent = TDLearningAgent(file="knowledge.txt")
         self.rand_agent=RandomAgent()
 
         self.blue_agent = self.td_agent
