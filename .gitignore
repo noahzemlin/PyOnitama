@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 .idea/
 knowledge.txt
+knowledgeLamHeur.txt
+knowledgeLamLam.txt
+knowledgeLamLamGood.txt
