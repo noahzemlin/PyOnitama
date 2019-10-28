@@ -14,8 +14,10 @@ class QLearningExperimentWithDecay(BaseExperiment):
 
         # Eventually move to using the same agent for both, but difficult to get last action
         self.q_agent = QLearningAgentWithDecay()
+        self.q_agent.read_from_file('q_decay.brain')
         self.stored_epsilon = self.q_agent.base_epsilon
         self.stored_alpha = self.q_agent.alpha
+        self.stored_floor = self.q_agent.epsilon_floor
         self.random_agent = RandomAgent()
         self.heur_agent = HeuristicAgent()
 
@@ -24,7 +26,7 @@ class QLearningExperimentWithDecay(BaseExperiment):
 
         self.do_render = False
 
-        self.trained_games = 0
+        self.trained_games = 1000000
 
         self.stage = 1
         self.stage_games = 0
@@ -32,7 +34,7 @@ class QLearningExperimentWithDecay(BaseExperiment):
 
         # start with exhibition
         self.q_agent.alpha = 0
-        self.q_agent.epsilon = 0
+        self.q_agent.base_epsilon = 0
         self.blue_agent = self.q_agent
         self.red_agent = self.random_agent
 
@@ -47,19 +49,24 @@ class QLearningExperimentWithDecay(BaseExperiment):
             if game_state.winner == Piece.RED and self.red_agent == self.q_agent:
                 self.wins += 1
 
-        if self.trained_games < 500000 + 1:
+        if self.trained_games < 2000000 + 1:
+
+            if self.trained_games % 99999 == 0:
+                self.q_agent.write_to_file('q_decay_3.brain')
 
             if self.stage == 0:  # training
                 self.trained_games = self.trained_games + 1
 
                 if self.stage_games == 5000:
-                    self.q_agent.write_to_file('q_decay.brain')
+                    # self.q_agent.write_to_file('q_decay.brain')
                     print(f'{self.trained_games},{len(self.q_agent.Q)},', end='')
 
                     self.stage_games = 0
                     self.stage = 1
                     self.q_agent.alpha = 0
                     self.q_agent.base_epsilon = 0
+                    self.q_agent.epsilon = 0
+                    self.q_agent.epsilon_floor = 0
                     self.blue_agent = self.q_agent
                     self.red_agent = self.random_agent
 
@@ -90,9 +97,11 @@ class QLearningExperimentWithDecay(BaseExperiment):
                     self.red_agent = self.q_agent
                     self.q_agent.alpha = self.stored_alpha
                     self.q_agent.base_epsilon = self.stored_epsilon
+                    self.q_agent.epsilon = self.q_agent.base_epsilon
+                    self.q_agent.epsilon_floor = self.stored_floor
 
             return True
         else:
             # Store agent's Q into file
-            self.q_agent.write_to_file('q_decay.brain')
+            self.q_agent.write_to_file('q_decay_3.brain')
             return False

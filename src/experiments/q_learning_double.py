@@ -47,7 +47,7 @@ class QLearningExperimentDouble(BaseExperiment):
             if game_state.winner == Piece.RED and self.red_agent == self.q_agent:
                 self.wins += 1
 
-        if self.trained_games < 500000 + 1:
+        if self.trained_games < 2000000 + 1:
 
             if self.stage == 0:  # training
                 self.trained_games = self.trained_games + 1

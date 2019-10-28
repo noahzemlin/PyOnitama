@@ -64,17 +64,12 @@ def game_state_to_q_state(game: GameState, action_tuple):
     return state
 
 
-class QLearningAgent(BaseAgent):
+class QLearningAgent_But_Pass(BaseAgent):
     def __init__(self):
         super().__init__()
 
         self.Q = {}
-        self.alpha = 0.05  # Learning rate
-        self.gamma = 0.98  # Discount factor
-        self.epsilon = 0.15  # Epsilon greedy
-
-        self.last_state_key_blue = None
-        self.last_state_key_red = None
+        self.last_num = 0
 
     def write_to_file(self, file):
         with open(file, 'wb') as f:
@@ -84,25 +79,8 @@ class QLearningAgent(BaseAgent):
         with open(file, 'rb') as f:
             self.Q = pickle.load(f)
 
-    def q_learn(self, last_state, reward, future_estimate):
-        new_Q = (1 - self.alpha) * self.getQ(last_state) + self.alpha * (reward + self.gamma * future_estimate)
-
-        # Don't write 0's, no point but wastes space
-        if new_Q != 0:
-            self.Q[last_state] = new_Q
-
     def game_end(self, game: GameState):
-        # give +1 if win, -1 if lose
-
-        if self.last_state_key_blue is not None and game.winner == Piece.BLUE:
-            self.q_learn(self.last_state_key_blue, 1, 0)
-            self.q_learn(self.last_state_key_red, -1, 0)
-        elif self.last_state_key_red is not None:
-            self.q_learn(self.last_state_key_red, 1, 0)
-            self.q_learn(self.last_state_key_blue, -1, 0)
-
-        self.last_state_key_blue = None
-        self.last_state_key_red = None
+        pass
 
     def getQ(self, key):
         if key not in self.Q:
@@ -111,6 +89,9 @@ class QLearningAgent(BaseAgent):
             return self.Q[key]
 
     def move(self, game: GameState):
+
+        if game.turn_num == self.last_num:
+            return
 
         actions = game.get_possible_actions()
         action_key_value_pairs = []
@@ -122,32 +103,13 @@ class QLearningAgent(BaseAgent):
 
         random.shuffle(action_key_value_pairs)
         action_key_value_pairs.sort(key=lambda x: x[2], reverse=True)
-        max_action = action_key_value_pairs[0][0]
-        max_action_key = action_key_value_pairs[0][1]
         max_action_value = action_key_value_pairs[0][2]
 
-        if random.random() < self.epsilon:
-            # pick random action lol
-            max_action_tuple = random.choice(action_key_value_pairs)
-            max_action = max_action_tuple[0]
-            max_action_key = max_action_tuple[1]
-
+        print("suggestion: ")
         print(action_key_value_pairs)
 
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
         print(f'Confidence: {max_action_value}')
 
-        if game.current_player == Piece.BLUE:
-            if self.last_state_key_blue is not None:
-                self.q_learn(self.last_state_key_blue, 0, max_action_value)
-
-            self.last_state_key_blue = max_action_key
-
-        else:
-            if self.last_state_key_red is not None:
-                self.q_learn(self.last_state_key_red, 0, max_action_value)
-
-            self.last_state_key_red = max_action_key
-
-        game.make_move_tuple(max_action)
+        self.last_num = game.turn_num

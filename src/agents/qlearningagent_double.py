@@ -150,8 +150,9 @@ class QLearningAgentDouble(BaseAgent):
 
         if random.random() < self.epsilon:
             # pick random action lol
-            max_action_a = random.choice(actions)
-            max_action_key_a = game_state_to_q_state(game, max_action_a)
+            max_action_tuple = random.choice(action_key_value_pairs)
+            max_action_a = max_action_tuple[0]
+            max_action_key_a = max_action_tuple[1]
 
 
 

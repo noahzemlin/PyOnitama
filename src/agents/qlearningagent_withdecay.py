@@ -74,7 +74,7 @@ class QLearningAgentWithDecay(BaseAgent):
         self.base_epsilon = 0.9
         self.epsilon = self.base_epsilon  # Epsilon greedy
         self.epsilon_decay = 0.8
-        self.epsilon_floor = 0.05
+        self.epsilon_floor = 0.15
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
@@ -133,14 +133,15 @@ class QLearningAgentWithDecay(BaseAgent):
 
         if random.random() < self.epsilon:
             # pick random action lol
-            max_action = random.choice(actions)
-            max_action_key = game_state_to_q_state(game, max_action)
+            max_action_tuple = random.choice(action_key_value_pairs)
+            max_action = max_action_tuple[0]
+            max_action_key = max_action_tuple[1]
 
-        # print(action_key_value_pairs)
+        print(action_key_value_pairs)
 
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
-        # print(f'Confidence: {max_action_value}')
+        print(f'Confidence: {max_action_value}')
 
         if game.current_player == Piece.BLUE:
             if self.last_state_key_blue is not None:
