@@ -4,13 +4,14 @@ from src.experiments.q_learning import QLearningExperiment
 from src.experiments.td_learning import TDLearningExperiment
 from src.experiments.tdlam_learning import TDLambdaLearningExperiment
 from src.experiments.play_against_q_agent import PlayAgainstQExperiment
+from src.experiments.play_against_td_lam import HumanTDLamExperiment
 from src.game import Game
 from src.render import Screen
 
 
 def main():
 
-    game = Game(TDLambdaLearningExperiment())
+    game = Game(HumanTDLamExperiment())
 
     if game.do_render:
 

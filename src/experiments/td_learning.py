@@ -8,7 +8,7 @@ from src.interfaces.game_state import GameState, Piece
 class TDLearningExperiment(BaseExperiment):
     def __init__(self):
         super().__init__()
-        self.td_agent = TDLearningAgent(file="knowledge.txt")
+        self.td_agent = TDLearningAgent()
         self.rand_agent=RandomAgent()
 
         self.blue_agent = self.td_agent
@@ -21,13 +21,15 @@ class TDLearningExperiment(BaseExperiment):
         self.realGamesWon=0
         self.reallyPlaying=False
     def game_ended(self, game_state: GameState):
+        print("finishedGame "+str(self.num_games))
+        self.td_agent.last_state_key=None
         if self.reallyPlaying:
             if game_state.winner == Piece.BLUE:
                 self.realGamesWon += 1
         self.num_games += 1
         if self.num_games % 10000 == 0:  # every 10000 games, record
-            with open("knowledge.txt", 'w') as f:
-                json.dump(self.td_agent.V, f)
+            # with open("knowledge.txt", 'w') as f:
+            #     json.dump(self.td_agent.V, f)
             print("Dumped at game "+str(self.num_games))
         while True:
             if self.num_games % 5000 == 0:
@@ -36,9 +38,9 @@ class TDLearningExperiment(BaseExperiment):
             if self.num_games % 5000 == 100:
                 self.td_agent.epsilon=0.15
                 self.reallyPlaying=False
-                f = open("results", "a")
-                f.write(str(self.num_games-100)+", "+str(self.realGamesWon)+"\n")
-                print("GamesPlayed: "+str(self.num_games)+", Win %: "+str(self.realGamesWon))
+                # f = open("results", "a")
+                # f.write(str(self.num_games-100)+", "+str(self.realGamesWon)+", "+str(len(self.td_agent.V))+"\n")
+                print("GamesPlayed: "+str(self.num_games)+", Win %: "+str(self.realGamesWon)+", len(V) = "+str(len(self.td_agent.V)))
                 self.realGamesWon=0
 
             #print("game complete\n")

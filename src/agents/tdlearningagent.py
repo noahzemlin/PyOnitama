@@ -1,5 +1,6 @@
 import json
 import random
+import copy
 
 from src.agents.base_agent import BaseAgent
 from src.interfaces.game_state import GameState, Piece
@@ -66,7 +67,8 @@ class TDLearningAgent(BaseAgent):
 
 
     def move(self, game: GameState):
-        self.td_learn(self.last_state_key, 0, game_to_v_state(game))
+        if self.last_state_key != None:
+            self.td_learn(self.last_state_key, 0, game_to_v_state(game))
         chosen_action = None
         actions = game.get_possible_actions()
         random.shuffle(actions) # get a random move if all are equal
@@ -75,7 +77,7 @@ class TDLearningAgent(BaseAgent):
         else:
             max_V = -10000
             for action in actions:
-                tempGame=game
+                tempGame=copy.deepcopy(game)
                 tempGame.make_move_tuple(action)
                 if tempGame.winner==Piece.BLUE: #Choose winning action if available. Impossible to lose on your turn.
                     max_V = 10000
@@ -86,7 +88,7 @@ class TDLearningAgent(BaseAgent):
                 random.shuffle(actions2)
                 min_V=10000
                 for action2 in actions2:
-                    tempGame2=tempGame
+                    tempGame2=copy.deepcopy(tempGame)
                     tempGame2.make_move_tuple(action2)
                     if tempGame2.winner==Piece.RED: #Choose winning action if available. Impossible to lose on your turn.
                         min_V = -9999

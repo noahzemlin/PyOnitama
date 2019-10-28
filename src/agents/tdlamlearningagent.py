@@ -1,5 +1,6 @@
 import json
 import random
+import copy
 
 from src.agents.base_agent import BaseAgent
 from src.interfaces.game_state import GameState, Piece
@@ -36,24 +37,73 @@ class TDLambdaLearningAgent(BaseAgent):
         self.alpha = 0.005  # Learning rate
         self.gamma = 0.98  # Discount factor
         self.epsilon = 0.15  # Epsilon greedy
-        self.tdLambda = 0.65
+        self.tdLambda = 0.7 #For TD_Lambda
+        self.moveDepth = 0
+
+        #Things that NEED to be reset each game
         self.e = {}
         self.statesThisGame=[]
-
+        self.bestAvgY=4
         self.last_state_key = None
+        self.lastGameState = None
 
         if file is not None:
             with open(file, 'r') as f:
                 self.V= json.load(f)
 
-    def td_learn(self, last_state, reward, cur_state):
+    def reset_game(self):
+        self.last_state_key=None
+        self.bestAvgY=4
+        self.e={}
+        self.statesThisGame=[]
+        self.lastGameState=None
+
+    def reward(self, lastTurn: GameState, now: GameState):
+        numBluePawnsLast=0
+        numRedPawnsLast=0
+        numBluePawnsNow=0
+        numRedPawnsNow=0
+        totalYLast=0.0
+        totalYNow=0.0
+        for x in range(0,5):
+            for y in range(0,5):
+                if lastTurn.board[x][y] == Piece.RED or lastTurn.board[x][y] == Piece.RED_KING:
+                    numRedPawnsLast += 1
+                elif lastTurn.board[x][y] == Piece.BLUE or lastTurn.board[x][y] == Piece.BLUE_KING:
+                    numBluePawnsLast += 1
+                    totalYLast+=y
+                if now.board[x][y] == Piece.RED or now.board[x][y] == Piece.RED_KING:
+                    numRedPawnsNow += 1
+                elif now.board[x][y] == Piece.BLUE or now.board[x][y] == Piece.BLUE_KING:
+                    numBluePawnsNow += 1
+                    totalYNow+=y
+        reward=0.0
+        if numBluePawnsLast>numBluePawnsNow:
+            reward -= 0.5
+        if numRedPawnsLast>numRedPawnsNow:
+            reward += 0.5
+        avgYNow=totalYNow/numBluePawnsNow
+        if avgYNow < self.bestAvgY:
+            reward += 0.05
+            self.bestAvgY=avgYNow
+        return reward
+
+    def td_learn(self, last_game: GameState, reward, cur_game: GameState):
+        if reward==0:
+            reward=self.reward(last_game,cur_game)
+
+        last_state=game_to_v_state(self.lastGameState)
+        cur_state=game_to_v_state(cur_game)
 
         old_V = self.getV(last_state)
+
         delta=reward+self.gamma*self.getV(cur_state)-old_V
+
         if last_state not in self.e:
             self.e[last_state]=0
         if last_state not in self.V:
             self.V[last_state]=0
+
         self.e[last_state]=self.e[last_state]+1
         self.statesThisGame.append(last_state)
         for state in self.statesThisGame:
@@ -67,10 +117,10 @@ class TDLambdaLearningAgent(BaseAgent):
 
     def game_end(self, game: GameState):
         if game.winner == Piece.BLUE:
-            self.td_learn(self.last_state_key, 5.0, game_to_v_state(game))
+            self.td_learn(self.lastGameState, 5.0, game)
             #print("TD WINS!!!")
         else:
-            self.td_learn(self.last_state_key, -5.0, game_to_v_state(game))
+            self.td_learn(self.lastGameState, -5.0, game)
             #print("Other wins...")
 
     def getV(self, key):
@@ -81,7 +131,8 @@ class TDLambdaLearningAgent(BaseAgent):
 
 
     def move(self, game: GameState):
-        self.td_learn(self.last_state_key, 0, game_to_v_state(game))
+        if self.last_state_key != None:
+            self.td_learn(self.lastGameState, 0, game)
         chosen_action = None
         actions = game.get_possible_actions()
         random.shuffle(actions) # get a random move if all are equal
@@ -90,29 +141,46 @@ class TDLambdaLearningAgent(BaseAgent):
         else:
             max_V = -10000
             for action in actions:
-                tempGame=game
+                tempGame=copy.deepcopy(game)
                 tempGame.make_move_tuple(action)
-                if tempGame.winner==Piece.BLUE: #Choose winning action if available. Impossible to lose on your turn.
-                    max_V = 10000
-                    chosen_action=action
-                    break
-
-                actions2 = tempGame.get_possible_actions()
-                random.shuffle(actions2)
-                min_V=10000
-                for action2 in actions2:
-                    tempGame2=tempGame
-                    tempGame2.make_move_tuple(action2)
-                    if tempGame2.winner==Piece.RED: #Choose winning action if available. Impossible to lose on your turn.
-                        min_V = -9999
-                        break
-                    VOfAction2=self.getV(game_to_v_state(tempGame2))
-                    if VOfAction2 < min_V:
-                        min_V=VOfAction2
-
-                VOfAction=self.getV(game_to_v_state(tempGame))
-                if min_V>max_V:
-                    chosen_action=action
-                    max_V=min_V
+                tempGameV=self.miniMax(tempGame,1)
+                if tempGameV> max_V:
+                    chosen_action = action
+                    max_V=tempGameV
         self.last_state_key=game_to_v_state(game)
+        self.lastGameState=game
         game.make_move_tuple(chosen_action)
+
+    def miniMax(self, game: GameState,depth):
+        if game.winner != Piece.NONE:
+            if game.winner == Piece.BLUE:
+                return 9999
+            else:
+                return -9999
+
+        if depth>=self.moveDepth:
+            return self.getV(game_to_v_state(game))
+
+        chosen_action = None
+        actions = game.get_possible_actions()
+        random.shuffle(actions)
+        best_V=0
+        if game.current_player==Piece.BLUE:
+            best_V=-10000
+            for action in actions:
+                tempGame=copy.deepcopy(game)
+                tempGame.make_move_tuple(action)
+                actionV=self.miniMax(tempGame,depth+1)
+                if actionV > best_V:
+                    best_V = actionV
+                    chosen_action=action
+        else:
+            best_V=10000
+            for action in actions:
+                tempGame=copy.deepcopy(game)
+                tempGame.make_move_tuple(action)
+                actionV=self.miniMax(tempGame,depth+1)
+                if actionV < best_V:
+                    best_V = actionV
+                    chosen_action=action
+        return best_V
