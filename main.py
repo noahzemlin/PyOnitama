@@ -1,14 +1,15 @@
 import pygame
 
 from src.experiments.q_learning import QLearningExperiment
-from src.experiments.play_against_q_agent import PlayAgainstQExperiment
+from src.experiments.q_learning_double import QLearningExperimentDouble
+from src.experiments.q_learning_withdecay import QLearningExperimentWithDecay
 from src.game import Game
 from src.render import Screen
 
 
 def main():
 
-    game = Game(QLearningExperiment())
+    game = Game(QLearningExperimentDouble())
 
     if game.do_render:
 

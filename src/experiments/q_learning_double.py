@@ -2,17 +2,18 @@ import json
 
 from src.agents.heuristic_agent import HeuristicAgent
 from src.agents.qlearningagent import QLearningAgent
+from src.agents.qlearningagent_double import QLearningAgentDouble
 from src.agents.random import RandomAgent
 from src.experiments.base_experiment import BaseExperiment
 from src.interfaces.game_state import GameState, Piece
 
 
-class QLearningExperiment(BaseExperiment):
+class QLearningExperimentDouble(BaseExperiment):
     def __init__(self):
         super().__init__()
 
         # Eventually move to using the same agent for both, but difficult to get last action
-        self.q_agent = QLearningAgent()
+        self.q_agent = QLearningAgentDouble()
         self.stored_epsilon = self.q_agent.epsilon
         self.stored_alpha = self.q_agent.alpha
         self.random_agent = RandomAgent()
@@ -35,7 +36,7 @@ class QLearningExperiment(BaseExperiment):
         self.blue_agent = self.q_agent
         self.red_agent = self.random_agent
 
-        print(f'{self.trained_games},{len(self.q_agent.Q)},', end='')
+        print(f'{self.trained_games},{len(self.q_agent.QA)},', end='')
 
     def game_ended(self, game_state: GameState):
         self.stage_games = self.stage_games + 1
@@ -52,8 +53,8 @@ class QLearningExperiment(BaseExperiment):
                 self.trained_games = self.trained_games + 1
 
                 if self.stage_games == 5000:
-                    self.q_agent.write_to_file('q.brain')
-                    print(f'{self.trained_games},{len(self.q_agent.Q)},', end='')
+                    self.q_agent.write_to_file('q_double.brain')
+                    print(f'{self.trained_games},{len(self.q_agent.QA)},', end='')
 
                     self.stage_games = 0
                     self.stage = 1
@@ -93,5 +94,5 @@ class QLearningExperiment(BaseExperiment):
             return True
         else:
             # Store agent's Q into file
-            self.q_agent.write_to_file('q.brain')
+            self.q_agent.write_to_file('q_double.brain')
             return False

@@ -64,14 +64,17 @@ def game_state_to_q_state(game: GameState, action_tuple):
     return state
 
 
-class QLearningAgent(BaseAgent):
+class QLearningAgentWithDecay(BaseAgent):
     def __init__(self):
         super().__init__()
 
         self.Q = {}
-        self.alpha = 0.05  # Learning rate
+        self.alpha = 0.1  # Learning rate
         self.gamma = 0.98  # Discount factor
-        self.epsilon = 0.15  # Epsilon greedy
+        self.base_epsilon = 0.9
+        self.epsilon = self.base_epsilon  # Epsilon greedy
+        self.epsilon_decay = 0.8
+        self.epsilon_floor = 0.05
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
@@ -103,6 +106,8 @@ class QLearningAgent(BaseAgent):
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
+
+        self.epsilon = self.base_epsilon
 
     def getQ(self, key):
         if key not in self.Q:
@@ -150,3 +155,8 @@ class QLearningAgent(BaseAgent):
             self.last_state_key_red = max_action_key
 
         game.make_move_tuple(max_action)
+
+        # decay
+        self.epsilon = self.epsilon * self.epsilon_decay
+        if self.epsilon < self.epsilon_floor:
+            self.epsilon = self.epsilon_floor

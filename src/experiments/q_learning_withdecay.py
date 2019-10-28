@@ -2,18 +2,19 @@ import json
 
 from src.agents.heuristic_agent import HeuristicAgent
 from src.agents.qlearningagent import QLearningAgent
+from src.agents.qlearningagent_withdecay import QLearningAgentWithDecay
 from src.agents.random import RandomAgent
 from src.experiments.base_experiment import BaseExperiment
 from src.interfaces.game_state import GameState, Piece
 
 
-class QLearningExperiment(BaseExperiment):
+class QLearningExperimentWithDecay(BaseExperiment):
     def __init__(self):
         super().__init__()
 
         # Eventually move to using the same agent for both, but difficult to get last action
-        self.q_agent = QLearningAgent()
-        self.stored_epsilon = self.q_agent.epsilon
+        self.q_agent = QLearningAgentWithDecay()
+        self.stored_epsilon = self.q_agent.base_epsilon
         self.stored_alpha = self.q_agent.alpha
         self.random_agent = RandomAgent()
         self.heur_agent = HeuristicAgent()
@@ -52,13 +53,13 @@ class QLearningExperiment(BaseExperiment):
                 self.trained_games = self.trained_games + 1
 
                 if self.stage_games == 5000:
-                    self.q_agent.write_to_file('q.brain')
+                    self.q_agent.write_to_file('q_decay.brain')
                     print(f'{self.trained_games},{len(self.q_agent.Q)},', end='')
 
                     self.stage_games = 0
                     self.stage = 1
                     self.q_agent.alpha = 0
-                    self.q_agent.epsilon = 0
+                    self.q_agent.base_epsilon = 0
                     self.blue_agent = self.q_agent
                     self.red_agent = self.random_agent
 
@@ -88,10 +89,10 @@ class QLearningExperiment(BaseExperiment):
                     self.blue_agent = self.q_agent
                     self.red_agent = self.q_agent
                     self.q_agent.alpha = self.stored_alpha
-                    self.q_agent.epsilon = self.stored_epsilon
+                    self.q_agent.base_epsilon = self.stored_epsilon
 
             return True
         else:
             # Store agent's Q into file
-            self.q_agent.write_to_file('q.brain')
+            self.q_agent.write_to_file('q_decay.brain')
             return False
