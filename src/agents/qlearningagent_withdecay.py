@@ -74,7 +74,10 @@ class QLearningAgentWithDecay(BaseAgent):
         self.base_epsilon = 0.9
         self.epsilon = self.base_epsilon  # Epsilon greedy
         self.epsilon_decay = 0.8
-        self.epsilon_floor = 0.15
+        self.epsilon_floor = 0.10
+
+        self.last_action_blue = None
+        self.last_action_red = None
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
@@ -95,14 +98,15 @@ class QLearningAgentWithDecay(BaseAgent):
             self.Q[last_state] = new_Q
 
     def game_end(self, game: GameState):
-        # give +1 if win, -1 if lose
+        # give +10/n if win, -2 if lose
+        # n = number rounds / 2
 
         if self.last_state_key_blue is not None and game.winner == Piece.BLUE:
-            self.q_learn(self.last_state_key_blue, 1, 0)
-            self.q_learn(self.last_state_key_red, -1, 0)
+            self.q_learn(self.last_state_key_blue, 20 / game.turn_num, 0)
+            self.q_learn(self.last_state_key_red, -2, 0)
         elif self.last_state_key_red is not None:
-            self.q_learn(self.last_state_key_red, 1, 0)
-            self.q_learn(self.last_state_key_blue, -1, 0)
+            self.q_learn(self.last_state_key_red, 20 / game.turn_num, 0)
+            self.q_learn(self.last_state_key_blue, -2, 0)
 
         self.last_state_key_blue = None
         self.last_state_key_red = None
@@ -116,6 +120,13 @@ class QLearningAgentWithDecay(BaseAgent):
             return self.Q[key]
 
     def move(self, game: GameState):
+
+        reward = 0
+
+        if self.last_action_red and self.last_action_red[3] > self.last_action_red[1] and game.current_player == Piece.RED:  # moving forward is good
+            reward = 0.05
+        if self.last_action_blue and self.last_action_blue[3] < self.last_action_blue[1] and game.current_player == Piece.BLUE:  # moving forward is good
+            reward = 0.05
 
         actions = game.get_possible_actions()
         action_key_value_pairs = []
@@ -137,23 +148,25 @@ class QLearningAgentWithDecay(BaseAgent):
             max_action = max_action_tuple[0]
             max_action_key = max_action_tuple[1]
 
-        print(action_key_value_pairs)
+        # print(action_key_value_pairs)
 
         # cool line to get percentage confidence of winning based on last move
         # uncomment when playing against agent
-        print(f'Confidence: {max_action_value}')
+        # print(f'Confidence: {max_action_value}')
 
         if game.current_player == Piece.BLUE:
             if self.last_state_key_blue is not None:
-                self.q_learn(self.last_state_key_blue, 0, max_action_value)
+                self.q_learn(self.last_state_key_blue, reward, max_action_value)
 
             self.last_state_key_blue = max_action_key
+            self.last_action_blue = max_action
 
         else:
             if self.last_state_key_red is not None:
-                self.q_learn(self.last_state_key_red, 0, max_action_value)
+                self.q_learn(self.last_state_key_red, reward, max_action_value)
 
             self.last_state_key_red = max_action_key
+            self.last_action_red = max_action
 
         game.make_move_tuple(max_action)
 
