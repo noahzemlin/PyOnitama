@@ -10,6 +10,7 @@ class TDLambdaLearningExperiment(BaseExperiment):
     def __init__(self):
         super().__init__()
         self.td_agent = TDLambdaLearningAgent()
+        self.td_agent.moveDepth=0
         self.rand_agent=RandomAgent()
         self.h_agent=HeuristicAgent()
 

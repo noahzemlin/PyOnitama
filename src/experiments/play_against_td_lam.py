@@ -10,9 +10,9 @@ class HumanTDLamExperiment(BaseExperiment):
     def __init__(self):
         super().__init__()
         print("Starting brain load. May take a bit.")
-        self.td_agent = TDLambdaLearningAgent("knowledgeLamHeur.txt")
+        self.td_agent = TDLambdaLearningAgent("knowledgeLamSelfPlay.txt")
         print("Finished brain load.")
-        self.td_agent.moveDepth=4
+        self.td_agent.moveDepth=6
         self.blue_agent = self.td_agent
         self.red_agent = BaseAgent()
         self.td_agent.epsilon=0

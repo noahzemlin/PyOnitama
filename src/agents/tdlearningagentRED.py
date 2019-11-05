@@ -31,7 +31,7 @@ def game_to_v_state(game: GameState):
     game.cards = cards
     return state
 
-class TDLearningAgent(BaseAgent):
+class TDLearningAgentRED(BaseAgent):
     def __init__(self, file=None):
         self.V = {} # Map S -> R
         self.alpha = 0.10  # Learning rate
@@ -72,20 +72,19 @@ class TDLearningAgent(BaseAgent):
     def move(self, game: GameState):
         if self.last_state_key != None:
             self.td_learn(self.last_state_key, 0, game_to_v_state(game))
-
         chosen_action = None
         actions = game.get_possible_actions()
         random.shuffle(actions) # get a random move if all are equal
         if random.random() < self.epsilon:
             chosen_action = random.choice(actions)
         else:
-            max_V = -10000
+            min_V = 10000
             for action in actions:
                 tempGame=copy.deepcopy(game)
                 tempGame.make_move_tuple(action)
                 VOfAction=self.getV(game_to_v_state(tempGame))
-                if VOfAction>max_V:
+                if VOfAction<min_V:
                     chosen_action=action
-                    max_V=VOfAction
+                    min_V=VOfAction
         self.last_state_key=game_to_v_state(game)
         game.make_move_tuple(chosen_action)

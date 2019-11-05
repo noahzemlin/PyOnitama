@@ -92,8 +92,8 @@ class TDLambdaLearningAgentRed(BaseAgent):
         return reward
 
     def td_learn(self, last_game: GameState, reward, cur_game: GameState):
-        if reward==0:
-            reward=self.reward(last_game,cur_game)
+        #if reward==0:
+            #reward=self.reward(last_game,cur_game)
         reward=-1.0*reward
 
         last_state=game_to_v_state(self.lastGameState)
@@ -152,7 +152,7 @@ class TDLambdaLearningAgentRed(BaseAgent):
                     chosen_action = action
                     min_V=tempGameV
         self.last_state_key=game_to_v_state(game)
-        self.lastGameState=game
+        self.lastGameState=copy.deepcopy(game)
         game.make_move_tuple(chosen_action)
 
     def miniMax(self, game: GameState,depth):

@@ -36,7 +36,7 @@ class TDLambdaLearningAgent(BaseAgent):
         self.V = {} # Map S -> R
         self.alpha = 0.005  # Learning rate
         self.gamma = 0.98  # Discount factor
-        self.epsilon = 0.15  # Epsilon greedy
+        self.epsilon = 0.10  # Epsilon greedy
         self.tdLambda = 0.7 #For TD_Lambda
         self.moveDepth = 0
 
@@ -89,8 +89,8 @@ class TDLambdaLearningAgent(BaseAgent):
         return reward
 
     def td_learn(self, last_game: GameState, reward, cur_game: GameState):
-        if reward==0:
-            reward=self.reward(last_game,cur_game)
+        #if reward==0:
+            #reward=self.reward(last_game,cur_game)
 
         last_state=game_to_v_state(self.lastGameState)
         cur_state=game_to_v_state(cur_game)
@@ -136,20 +136,72 @@ class TDLambdaLearningAgent(BaseAgent):
         chosen_action = None
         actions = game.get_possible_actions()
         random.shuffle(actions) # get a random move if all are equal
+        max_V = -100000
+        #print("Test1: "+str(max_V))
         if random.random() < self.epsilon:
             chosen_action = random.choice(actions)
         else:
-            max_V = -10000
             for action in actions:
                 tempGame=copy.deepcopy(game)
                 tempGame.make_move_tuple(action)
-                tempGameV=self.miniMax(tempGame,1)
+                tempGameV=self.alphaBeta(tempGame,1,-100000,100000)
+                if tempGameV==0:
+                    tempGameV=self.getV(game_to_v_state(tempGame))
                 if tempGameV> max_V:
                     chosen_action = action
                     max_V=tempGameV
+            #print("Test2: "+str(max_V))
         self.last_state_key=game_to_v_state(game)
-        self.lastGameState=game
+        self.lastGameState=copy.deepcopy(game)
+        #print("Move's V estimate: "+str(max_V))
+        #print("Current State's V estimate: "+str(self.getV(game_to_v_state(game))))
         game.make_move_tuple(chosen_action)
+
+    def alphaBeta(self,game:GameState, depth, alpha, beta):
+        if game.winner != Piece.NONE:
+            if game.winner == Piece.BLUE:
+                return 50000-depth
+            else:
+                return -50000+depth
+
+        if depth>=self.moveDepth:
+            return self.getV(game_to_v_state(game))
+        chosen_action = None
+        actions = game.get_possible_actions()
+        random.shuffle(actions)
+        best_V=0
+        if game.current_player==Piece.BLUE:
+            best_V=-100000
+            for action in actions:
+                tempGame=copy.deepcopy(game)
+                tempGame.make_move_tuple(action)
+                actionV=self.alphaBeta(tempGame,depth+1,alpha,beta)
+                if actionV==0:
+                    actionV=self.getV(game_to_v_state(tempGame))
+                if actionV > best_V:
+                    best_V = actionV
+                    chosen_action=action
+                if actionV>alpha:
+                    alpha=actionV
+                if alpha>=beta:
+                    break
+        else:
+            best_V=100000
+            for action in actions:
+                tempGame=copy.deepcopy(game)
+                tempGame.make_move_tuple(action)
+                actionV=0
+                actionV=self.alphaBeta(tempGame,depth+1,alpha,beta)
+                if actionV==0:
+                    actionV=self.getV(game_to_v_state(tempGame))
+                if actionV < best_V:
+                    best_V = actionV
+                    chosen_action=action
+                if actionV<beta:
+                    beta=actionV
+                if alpha>=beta:
+                    break
+        return best_V
 
     def miniMax(self, game: GameState,depth):
         if game.winner != Piece.NONE:
