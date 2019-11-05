@@ -1,7 +1,6 @@
 import random
 
 from src.agents.base_agent import BaseAgent
-from src.interfaces.cards_enum import CARDS
 from src.interfaces.game_state import GameState, Piece
 
 
@@ -27,14 +26,15 @@ class HeuristicAgent(BaseAgent):
                 if move[3] < move[1] and game.current_player == Piece.BLUE:  # moving forward is good
                     rating[1] = rating[1] + 1
 
-                if 0 <= game[(move[2], move[3])].value - Piece.BLUE.value <= 1 and game.current_player == Piece.RED:  # is red moving onto blue
+                if 0 <= game[(move[2], move[
+                    3])].value - Piece.BLUE.value <= 1 and game.current_player == Piece.RED:  # is red moving onto blue
                     rating[1] = rating[1] + 2
-                if 0 <= game[(move[2], move[3])].value - Piece.RED.value <= 1 and game.current_player == Piece.BLUE:  # is blue moving onto red
+                if 0 <= game[(move[2], move[
+                    3])].value - Piece.RED.value <= 1 and game.current_player == Piece.BLUE:  # is blue moving onto red
                     rating[1] = rating[1] + 2
 
                 if game.does_move_win_tuple(move):  # if win, do it
                     rating[1] = rating[1] + 10
-
 
             random.shuffle(ratings)
             ratings.sort(key=lambda x: x[1], reverse=True)

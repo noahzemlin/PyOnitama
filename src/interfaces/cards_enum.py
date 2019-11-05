@@ -6,4 +6,6 @@ CARDS = {
     "Monkey": [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 }
 
-CARDS_ID = {card: i for i, card in enumerate(CARDS, 1)}
+CARDS_ID = {card: i for i, card in enumerate(CARDS, 0)}
+
+print(CARDS_ID)
