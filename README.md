@@ -2,7 +2,7 @@
 
 This project was made for CS 5033 Machine Learning. It emulates the Onitama board game.
 
-The associated paper with motivation, methods, and results can be viewed [here](https://github.com/noahzemlin/PyOnitama/raw/master/RL_for_Onitama.pdf).
+The associated paper with motivation, methods, and results can be viewed [here](https://github.com/noahzemlin/PyOnitama/blob/master/RL_for_Onitama.pdf).
 
 ## Run Instructions
 
